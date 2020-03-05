@@ -1,4 +1,4 @@
-name: Build MT7621-2
+name: Build R3P-2
 
 on: 
   release:
@@ -10,8 +10,8 @@ on:
   #    - master
   schedule:
     - cron: 0 17 * * 4
-#  watch:
-   # types: [started]
+  watch:
+    types: [started]
 
 jobs:
   build:
@@ -38,7 +38,7 @@ jobs:
         mkdir -p /opt/images/
     - name: Build Firmware
       env:
-        TNAME: "JDC-1-5.0 B70 NEWIFI-D1 GHL K2P-USB-5.0 NEWIFI3 MI-R3G"
+        TNAME: "R3P"
       run: |
         cwd=`pwd`
         CONFIG_TOOLCHAIN_DIR=${cwd//\//\\\/}\\/toolchain-mipsel
@@ -98,18 +98,9 @@ jobs:
         sudo ./build_firmware_bkye $m
         sudo mv -f images/*.trx /opt/images/
         done
-    - name: Upload binaries to release
-      uses: svenstaro/upload-release-action@v1-release
+    - name : Upload packages
+      uses: actions/upload-artifact@master
+      if: always()
       with:
-        repo_token: ${{ secrets.R_TOKEN }}
-        file: /opt/images/*.trx
-        tag: AtuoBuild
-        overwrite: true
-        file_glob: true
-    - uses: ncipollo/release-action@v1
-      with:
-       bodyFile: "changelog.md"
-       tag: AtuoBuild
-       allowUpdates: true
-       name: Padavan-firmware
-       token: ${{ secrets.R_TOKEN }}
+        name: Padavan-packages
+        path: /opt/images
